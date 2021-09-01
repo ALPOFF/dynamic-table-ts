@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "html-webpack-plugin": "^5.3.2"
+  },
   "devDependencies": {
     "file-loader": "^6.2.0",
     "sass": "^1.38.2",
