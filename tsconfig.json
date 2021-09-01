@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "target": "es2015",
+        "module": "commonjs",
+        "strict": true,
+        "resolveJsonModule": true
+    }
+  }
