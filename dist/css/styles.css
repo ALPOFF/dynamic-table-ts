@@ -1,18 +1,27 @@
+select, input {
+  width: 100px;
+  height: 20px;
+  border: 1px #ccc solid;
+  vertical-align: top;
+  margin-right: 5px;
+}
+
 table {
   width: 300px;
   border-collapse: collapse;
 }
 
-td {
+td, th {
   padding: 3px;
   border: 1px solid #747474;
 }
 
 th {
-  padding: 3px;
-  border: 1px solid #747474;
   color: white;
   background: #275b5f;
+}
+th:hover {
+  cursor: pointer;
 }
 
 option, select, input {
@@ -21,20 +30,7 @@ option, select, input {
   box-sizing: border-box;
 }
 
-input {
-  width: 100px;
-  height: 20px;
-  border: 1px #ccc solid;
-  vertical-align: top;
-  margin-right: 5px;
-}
-
 select {
-  width: 100px;
-  height: 20px;
-  border: 1px #ccc solid;
-  vertical-align: top;
-  margin-right: 5px;
   box-shadow: none;
 }
 
