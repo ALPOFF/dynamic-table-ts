@@ -98,10 +98,12 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
     //Поиск
     function findValue(): void {
         let selectValue: number = Number(selectElement.value);
-        tableRows.forEach((el: HTMLElement) => {
+        tableRows.forEach(el => {
             let tableRow: HTMLElement = el.children[selectValue] as HTMLElement;
-            if (tableRow.innerHTML.toLowerCase().indexOf(inputElement.value.toLowerCase()) !== -1 && inputElement.value !== "") {
-                tableRow.style.backgroundColor = "yellow";
+            tableRow.innerHTML = tableRow.innerText;
+            let cellData: string = tableRow.innerHTML.toLowerCase();
+            if (cellData.indexOf(inputElement.value.toLowerCase()) !== -1 && inputElement.value !== "") {
+                tableRow.innerHTML = tableRow.innerHTML.replace(new RegExp(inputElement.value, "gi"), (match) => `<mark>${match}</mark>`);
             } else {
                 tableRow.removeAttribute("style");
             }
@@ -112,7 +114,7 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
     function clearHighlight(): void {
         let tableDataRows = Array.from(document.querySelectorAll("td"));
         tableDataRows.forEach(el => {
-            el.removeAttribute("style");
+            el.innerHTML = el.innerHTML.replace(new RegExp("<[^>]*>", "gi"), "");
             inputElement.value = "";
         })
     }
