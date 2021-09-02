@@ -104,8 +104,6 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
             let cellData: string = tableRow.innerHTML.toLowerCase();
             if (cellData.indexOf(inputElement.value.toLowerCase()) !== -1 && inputElement.value !== "") {
                 tableRow.innerHTML = tableRow.innerHTML.replace(new RegExp(inputElement.value, "gi"), (match) => `<mark>${match}</mark>`);
-            } else {
-                tableRow.removeAttribute("style");
             }
         })
     }
