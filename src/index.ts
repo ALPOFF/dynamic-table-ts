@@ -1,8 +1,3 @@
-import * as data from "../data.json";
-
-//Создаем таблицу
-let tableElement = document.createElement("table");
-
 /**
   * Генерируем таблицу
   * @param {Array} jsonData - первое число
@@ -16,6 +11,9 @@ interface UserData {
 }
 
 function generateTable(jsonData: UserData[], elementIdForTable: string): void {
+    //Создаем таблицу
+    let tableElement: HTMLTableElement = document.createElement("table");
+
     //Создаем заголовки таблицы
     let headerCellNames: string = "";
     let headerCellNamesArray: string[] = Object.keys(jsonData[0]);
@@ -50,6 +48,7 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
 
     //Добавляем ввод
     let inputElement: HTMLInputElement = document.createElement("input");
+    inputElement.addEventListener("input", findValue)
     inputElement.type = "text";
     inputElement.id = "searchInput";
     searchDivContainer.appendChild(inputElement);
@@ -57,6 +56,7 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
     //Добавляем селект
     let selectElement: HTMLSelectElement = document.createElement("select");
     selectElement.setAttribute("id", "searchSelect");
+    selectElement.addEventListener("change", clearHighlight)
 
     for (let i = 0; i < headerCellNamesArray.length; i++) {
         let optionElement = document.createElement("option");
@@ -69,59 +69,53 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
     //Добавляем таблицу
     tableDivContainer.innerHTML = "";
     tableDivContainer.appendChild(tableElement);
-}
 
-generateTable(data.users, "table");
+    //Присваиваем событие сортировки при нажатии на каждое название столбца 
+    let headerCellsArray = document.querySelectorAll("th");
+    headerCellsArray.forEach((el, index) => el.addEventListener("click", sortableElement.bind(headerCellsArray, index)));
 
+    //Сортировка таблицы
+    let sortStatus: boolean = true; //true - отсортировано от А до Я; false - отсортировано от Я до А
+    let prevColumnNumber: number = 0;
+    let tableRows = Array.from(document.querySelectorAll("tr")).slice(1);
 
-
-//Сортировка таблицы
-let headerCellsArray = document.querySelectorAll("th");
-let sortStatus: boolean = true; //true - отсортировано от А до Я; false - отсортировано от Я до А
-let prevColumnNumber: number = 0;
-let tableRows = Array.from(document.querySelectorAll("tr")).slice(1);
-
-function sortableElement(currentColumnNumber: number): void {
-    let sortPointer = document.getElementsByClassName("sort-pointer");
-    if (!sortStatus && prevColumnNumber == currentColumnNumber) { //Проверяем был ли отсортирован текущий столбец
-        tableRows.reverse();
-        sortStatus = true;
-        sortPointer[currentColumnNumber].innerHTML = "&#9650";
-    } else {
-        //Сортируем сверяя значения от индекса столбца
-        tableRows.sort((a, b) => a.children[currentColumnNumber].innerHTML.localeCompare(b.children[currentColumnNumber].innerHTML));
-        prevColumnNumber = currentColumnNumber;
-        sortStatus = false;
-        sortPointer[currentColumnNumber].innerHTML = "&#9660";
-    }
-    tableRows.forEach(row => tableElement.appendChild(row));
-}
-
-headerCellsArray.forEach((el, index) => el.addEventListener("click", sortableElement.bind(this, index)));
-
-
-
-//Поиск
-let input: HTMLInputElement = <HTMLInputElement>document.getElementById("searchInput")!;
-let select: HTMLSelectElement = <HTMLSelectElement>document.getElementById("searchSelect");
-
-input.oninput = function findValue(): void {
-    let selectValue: number = Number(select.value);
-    tableRows.forEach((el: HTMLElement) => {
-        let tableRow: HTMLElement = el.children[selectValue] as HTMLElement;
-        if (tableRow.innerHTML.toLowerCase().indexOf(input.value.toLowerCase()) !== -1 && input.value !== "") {
-            tableRow.style.backgroundColor = "yellow";
+    function sortableElement(currentColumnNumber: number): void {
+        let sortPointer = document.getElementsByClassName("sort-pointer");
+        if (!sortStatus && prevColumnNumber == currentColumnNumber) { //Проверяем был ли отсортирован текущий столбец
+            tableRows.reverse();
+            sortStatus = true;
+            sortPointer[currentColumnNumber].innerHTML = "&#9650";
         } else {
-            tableRow.removeAttribute("style");
+            //Сортируем сверяя значения от индекса столбца
+            tableRows.sort((a, b) => a.children[currentColumnNumber].innerHTML.localeCompare(b.children[currentColumnNumber].innerHTML));
+            prevColumnNumber = currentColumnNumber;
+            sortStatus = false;
+            sortPointer[currentColumnNumber].innerHTML = "&#9660";
         }
-    })
+        tableRows.forEach(row => tableElement.appendChild(row));
+    }
+
+    //Поиск
+    function findValue(): void {
+        let selectValue: number = Number(selectElement.value);
+        tableRows.forEach((el: HTMLElement) => {
+            let tableRow: HTMLElement = el.children[selectValue] as HTMLElement;
+            if (tableRow.innerHTML.toLowerCase().indexOf(inputElement.value.toLowerCase()) !== -1 && inputElement.value !== "") {
+                tableRow.style.backgroundColor = "yellow";
+            } else {
+                tableRow.removeAttribute("style");
+            }
+        })
+    }
+
+    //Сброс поиска и выделения полей при изменении столбца
+    function clearHighlight(): void {
+        let tableDataRows = Array.from(document.querySelectorAll("td"));
+        tableDataRows.forEach(el => {
+            el.removeAttribute("style");
+            inputElement.value = "";
+        })
+    }
 }
 
-//Сброс поиска и выделения полей при изменении столбца
-select.onchange = function clearHighlight(): void {
-    let tableDataRows = Array.from(document.querySelectorAll("td"));
-    tableDataRows.forEach(el => {
-        el.removeAttribute("style");
-        input.value = "";
-    })
-}
+fetch("data/data.json").then(resp => resp.json()).then(data => generateTable(data.users, "table"));
