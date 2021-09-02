@@ -5,12 +5,12 @@
   * @returns {void}
   */
 
-interface UserData {
+interface objectData {
     firstName?: string;
     lastName?: string;
 }
 
-function generateTable(jsonData: UserData[], elementIdForTable: string): void {
+function generateTable(jsonData: objectData[], elementIdForTable: string): void {
     //Создаем таблицу
     let tableElement: HTMLTableElement = document.createElement("table");
 
@@ -59,7 +59,7 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
     selectElement.addEventListener("change", clearHighlight)
 
     for (let i = 0; i < headerCellNamesArray.length; i++) {
-        let optionElement = document.createElement("option");
+        let optionElement: HTMLOptionElement = document.createElement("option");
         optionElement.value = `${i}`;
         optionElement.text = headerCellNamesArray[i];
         selectElement.appendChild(optionElement);
@@ -80,7 +80,7 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
     let tableRows = Array.from(document.querySelectorAll("tr")).slice(1);
 
     function sortableElement(currentColumnNumber: number): void {
-        let sortPointer = document.getElementsByClassName("sort-pointer");
+        let sortPointer:HTMLCollection = document.getElementsByClassName("sort-pointer");
         if (!sortStatus && prevColumnNumber == currentColumnNumber) { //Проверяем был ли отсортирован текущий столбец
             tableRows.reverse();
             sortStatus = true;
@@ -110,7 +110,7 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
 
     //Сброс поиска и выделения полей при изменении столбца
     function clearHighlight(): void {
-        let tableDataRows = Array.from(document.querySelectorAll("td"));
+        let tableDataRows: HTMLTableDataCellElement[] = Array.from(document.querySelectorAll("td"));
         tableDataRows.forEach(el => {
             el.innerHTML = el.innerHTML.replace(new RegExp("<[^>]*>", "gi"), "");
             inputElement.value = "";
@@ -118,4 +118,7 @@ function generateTable(jsonData: UserData[], elementIdForTable: string): void {
     }
 }
 
-fetch("data/data.json").then(resp => resp.json()).then(data => generateTable(data.users, "table"));
+fetch("data/data.json")
+.then(resp => resp.json())
+.then(data => generateTable(data.users, "table"))
+.catch(error => console.log("error:", error));;
